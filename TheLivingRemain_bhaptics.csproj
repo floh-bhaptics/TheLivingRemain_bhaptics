@@ -39,6 +39,10 @@
       <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\MelonLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Oculus.VR">
+      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\Managed\Oculus.VR.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
