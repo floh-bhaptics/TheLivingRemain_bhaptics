@@ -23,6 +23,46 @@ namespace TheLivingRemain_bhaptics
             tactsuitVr.PlaybackHaptics("HeartBeat");
         }
         
+        #region Health
+
+        [HarmonyPatch(typeof(PlayerController), "UpdatePlayerVisionAndAudio", new Type[] { })]
+        public class bhaptics_UpdateVisionAndAudio
+        {
+            [HarmonyPostfix]
+            public static void Postfix(PlayerController __instance)
+            {
+                //tactsuitVr.LOG("ApplyDamageFloat");
+                if (__instance.hurtStatus == HurtStatus.hurt) tactsuitVr.StartHeartBeat();
+                else tactsuitVr.StopHeartBeat();
+            }
+        }
+
+        [HarmonyPatch(typeof(MedBottle), "Update", new Type[] { })]
+        public class bhaptics_MedBottleHealth
+        {
+            [HarmonyPostfix]
+            public static void Postfix(MedBottle __instance)
+            {
+                if (__instance.used) return;
+                if (!__instance.CanGiveHeath()) return;
+                if (!tactsuitVr.IsPlaying("Healing")) tactsuitVr.PlaybackHaptics("Healing");
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerController), "playerDead", new Type[] { })]
+        public class bhaptics_PlayerDead
+        {
+            [HarmonyPostfix]
+            public static void Postfix()
+            {
+                tactsuitVr.StopThreads();
+            }
+        }
+
+        #endregion
+
+        #region Recoil
+
         [HarmonyPatch(typeof(Handgun), "FireGun", new Type[] { })]
         public class bhaptics_FireHandGun
         {
@@ -69,28 +109,6 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(MachineGunBack), "PutInBackpackHaptics", new Type[] { })]
-        public class bhaptics_StoreShotgun
-        {
-            [HarmonyPostfix]
-            public static void Postfix()
-            {
-                if (isRightHanded) tactsuitVr.PlaybackHaptics("StoreShotgun_R");
-                else tactsuitVr.PlaybackHaptics("StoreShotgun_L");
-            }
-        }
-
-        [HarmonyPatch(typeof(MachineGunBack), "AttachToHand", new Type[] { typeof(UnityEngine.GameObject), typeof(UnityEngine.Vector3), typeof(SnapDropZoneObject) })]
-        public class bhaptics_ReceiveShotgun
-        {
-            [HarmonyPostfix]
-            public static void Postfix()
-            {
-                if (isRightHanded) tactsuitVr.PlaybackHaptics("ReceiveShotgun_R");
-                else tactsuitVr.PlaybackHaptics("ReceiveShotgun_L");
-            }
-        }
-
         [HarmonyPatch(typeof(Melee), "StabHaptics", new Type[] { })]
         public class bhaptics_KnifeStab
         {
@@ -102,6 +120,9 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
+        #endregion
+
+        #region Explosions
 
         [HarmonyPatch(typeof(GenerateExplosion), "Explode", new Type[] { })]
         public class bhaptics_GenerateExplosion
@@ -153,15 +174,9 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(PlayerController), "playerDead", new Type[] {  })]
-        public class bhaptics_PlayerDead
-        {
-            [HarmonyPostfix]
-            public static void Postfix()
-            {
-                tactsuitVr.StopThreads();
-            }
-        }
+        #endregion
+
+        #region Damage
 
         [HarmonyPatch(typeof(PlayerController), "ApplyDamage", new Type[] { typeof(Damage) })]
         public class bhaptics_ApplyDamage
@@ -203,27 +218,17 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(PlayerController), "UpdatePlayerVisionAndAudio", new Type[] { })]
-        public class bhaptics_UpdateVisionAndAudio
-        {
-            [HarmonyPostfix]
-            public static void Postfix(PlayerController __instance)
-            {
-                //tactsuitVr.LOG("ApplyDamageFloat");
-                if (__instance.hurtStatus == HurtStatus.hurt) tactsuitVr.StartHeartBeat();
-                else tactsuitVr.StopHeartBeat();
-            }
-        }
+        #endregion
 
-        [HarmonyPatch(typeof(MedBottle), "Update", new Type[] {  })]
-        public class bhaptics_MedBottleHealth
+        #region Backpack
+
+        [HarmonyPatch(typeof(HandedInputSelector), "SetActiveController", new Type[] { typeof(OVRInput.Controller) })]
+        public class bhaptics_Handedness
         {
             [HarmonyPostfix]
-            public static void Postfix(MedBottle __instance)
+            public static void Postfix(OVRInput.Controller c)
             {
-                if (__instance.used) return;
-                if (!__instance.CanGiveHeath()) return;
-                if (!tactsuitVr.IsPlaying("Healing")) tactsuitVr.PlaybackHaptics("Healing");
+                isRightHanded = (c == OVRInput.Controller.RHand);
             }
         }
 
@@ -251,16 +256,6 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(HandedInputSelector), "SetActiveController", new Type[] { typeof(OVRInput.Controller) })]
-        public class bhaptics_Handedness
-        {
-            [HarmonyPostfix]
-            public static void Postfix(OVRInput.Controller c)
-            {
-                isRightHanded = (c == OVRInput.Controller.RHand);
-            }
-        }
-
         [HarmonyPatch(typeof(AmmoBeltMagazines), "AttachToHand", new Type[] { typeof(UnityEngine.GameObject), typeof(VRTK.VRTK_InteractGrab), typeof(VRTK.VRTK_InteractTouch) })]
         public class bhaptics_GetStuffFromBackPack
         {
@@ -271,6 +266,30 @@ namespace TheLivingRemain_bhaptics
                 else tactsuitVr.PlaybackHaptics("BackpackRetrieve_R");
             }
         }
+
+        [HarmonyPatch(typeof(MachineGunBack), "PutInBackpackHaptics", new Type[] { })]
+        public class bhaptics_StoreShotgun
+        {
+            [HarmonyPostfix]
+            public static void Postfix()
+            {
+                if (isRightHanded) tactsuitVr.PlaybackHaptics("StoreShotgun_R");
+                else tactsuitVr.PlaybackHaptics("StoreShotgun_L");
+            }
+        }
+
+        [HarmonyPatch(typeof(MachineGunBack), "AttachToHand", new Type[] { typeof(UnityEngine.GameObject), typeof(UnityEngine.Vector3), typeof(SnapDropZoneObject) })]
+        public class bhaptics_ReceiveShotgun
+        {
+            [HarmonyPostfix]
+            public static void Postfix()
+            {
+                if (isRightHanded) tactsuitVr.PlaybackHaptics("ReceiveShotgun_R");
+                else tactsuitVr.PlaybackHaptics("ReceiveShotgun_L");
+            }
+        }
+
+        #endregion
 
     }
 }
