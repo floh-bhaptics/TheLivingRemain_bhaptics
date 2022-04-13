@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+
 
 using MelonLoader;
 using HarmonyLib;
@@ -15,11 +17,14 @@ namespace TheLivingRemain_bhaptics
     {
         public static TactsuitVR tactsuitVr;
         public static bool isRightHanded = true;
+        public static Stopwatch timerBackpack = new Stopwatch();
+
 
         public override void OnApplicationStart()
         {
             base.OnApplicationStart();
             tactsuitVr = new TactsuitVR();
+            timerBackpack.Start();
             tactsuitVr.PlaybackHaptics("HeartBeat");
         }
         
@@ -109,17 +114,35 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(Melee), "StabHaptics", new Type[] { })]
-        public class bhaptics_KnifeStab
+        [HarmonyPatch(typeof(Melee), "PlayHapticsWithDelay", new Type[] { typeof(float) })]
+        public class bhaptics_KnifeHapticsDelay
         {
             [HarmonyPostfix]
             public static void Postfix(Melee __instance)
             {
+                tactsuitVr.LOG("DelayHaptics");
                 bool isRight = (__instance.hand == VRTK.GrabAttachMechanics.Hand.right);
                 tactsuitVr.Recoil("Knife", isRight);
             }
         }
 
+        /*
+        [HarmonyPatch(typeof(Melee), "Update", new Type[] {  })]
+        public class bhaptics_KnifeShowImpact
+        {
+            [HarmonyPostfix]
+            public static void Postfix(Melee __instance)
+            {
+                if (__instance.canStab && __instance.currentVelocity.magnitude > __instance.stabVelocity && __instance.fowardMovementSpeed < -0.04f)
+                {
+                    if (__instance.isStabbing) tactsuitVr.LOG("Stabbing");
+                    tactsuitVr.LOG("Update");
+                    bool isRight = (__instance.hand == VRTK.GrabAttachMechanics.Hand.right);
+                    tactsuitVr.Recoil("Knife", isRight);
+                }
+            }
+        }
+        */
         #endregion
 
         #region Explosions
@@ -239,6 +262,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix(AmmoBelt __instance, UnityEngine.GameObject obj)
             {
                 if (obj == null) return;
+                if (timerBackpack.ElapsedMilliseconds <= 300) return;
                 if (isRightHanded) tactsuitVr.PlaybackHaptics("BackpackStore_L");
                 else tactsuitVr.PlaybackHaptics("BackpackStore_R");
             }
@@ -262,6 +286,7 @@ namespace TheLivingRemain_bhaptics
             [HarmonyPostfix]
             public static void Postfix(AmmoBeltMagazines __instance)
             {
+                timerBackpack.Restart();
                 if (isRightHanded) tactsuitVr.PlaybackHaptics("BackpackRetrieve_L");
                 else tactsuitVr.PlaybackHaptics("BackpackRetrieve_R");
             }
