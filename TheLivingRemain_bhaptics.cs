@@ -18,6 +18,7 @@ namespace TheLivingRemain_bhaptics
         public static TactsuitVR tactsuitVr;
         public static bool isRightHanded = true;
         public static Stopwatch timerBackpack = new Stopwatch();
+        public static bool rightFootStep = true;
 
 
         public override void OnApplicationStart()
@@ -154,6 +155,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix()
             {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
+                tactsuitVr.PlaybackHaptics("ExplosionFeet");
             }
         }
 
@@ -164,6 +166,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix()
             {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
+                tactsuitVr.PlaybackHaptics("ExplosionFeet");
             }
         }
 
@@ -174,6 +177,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix()
             {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
+                tactsuitVr.PlaybackHaptics("ExplosionFeet");
             }
         }
 
@@ -184,6 +188,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix()
             {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
+                tactsuitVr.PlaybackHaptics("ExplosionFeet");
             }
         }
 
@@ -194,6 +199,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix()
             {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
+                tactsuitVr.PlaybackHaptics("ExplosionFeet");
             }
         }
 
@@ -311,6 +317,33 @@ namespace TheLivingRemain_bhaptics
             {
                 if (isRightHanded) tactsuitVr.PlaybackHaptics("ReceiveShotgun_R");
                 else tactsuitVr.PlaybackHaptics("ReceiveShotgun_L");
+            }
+        }
+
+        #endregion
+
+        #region Foot interaction
+
+        [HarmonyPatch(typeof(FootStepSound), "PlayAudioForSurface", new Type[] { typeof(GROUND_SURFACE) })]
+        public class bhaptics_Footsteps
+        {
+            [HarmonyPostfix]
+            public static void Postfix(GROUND_SURFACE groundSurface)
+            {
+                if (rightFootStep) tactsuitVr.PlaybackHaptics("FootStep_R");
+                else tactsuitVr.PlaybackHaptics("FootStep_L");
+                rightFootStep = !rightFootStep;
+            }
+        }
+
+        [HarmonyPatch(typeof(FootStepSound), "PlayLandingAudio", new Type[] {  })]
+        public class bhaptics_FallLanding
+        {
+            [HarmonyPostfix]
+            public static void Postfix()
+            {
+                tactsuitVr.PlaybackHaptics("FallDamage");
+                tactsuitVr.PlaybackHaptics("FallDamageFeet");
             }
         }
 
