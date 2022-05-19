@@ -104,6 +104,18 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
+        [HarmonyPatch(typeof(MachineGunFront), "GunFired", new Type[] { })]
+        public class bhaptics_FireShotgunFront
+        {
+            [HarmonyPostfix]
+            public static void Postfix(MachineGunFront __instance)
+            {
+                if (__instance.controllerReference == null) return;
+                if (!__instance.grabbed) return;
+                bool isRight = (__instance.controllerReference.hand == VRTK.SDK_BaseController.ControllerHand.Right);
+                tactsuitVr.Recoil("Shotgun", isRight, true);
+            }
+        }
         [HarmonyPatch(typeof(Minigun), "FireProjectile", new Type[] { })]
         public class bhaptics_FireMinigun
         {
