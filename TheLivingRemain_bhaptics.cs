@@ -10,6 +10,9 @@ using MelonLoader;
 using HarmonyLib;
 using MyBhapticsTactsuit;
 
+[assembly: MelonInfo(typeof(TheLivingRemain_bhaptics.TheLivingRemain_bhaptics), "TheLivingRemain_bhaptics", "1.5.0", "Florian Fahrenberger")]
+[assembly: MelonGame("Five Finger Studios", "TheLivingRemain")]
+
 
 namespace TheLivingRemain_bhaptics
 {
