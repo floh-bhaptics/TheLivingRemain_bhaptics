@@ -19,15 +19,14 @@ namespace TheLivingRemain_bhaptics
 {
     public class TheLivingRemain_bhaptics : MelonMod
     {
-        public static TactsuitVR tactsuitVr;
+        public static TactsuitVR tactsuitVr = null!;
         public static bool isRightHanded = true;
         public static Stopwatch timerBackpack = new Stopwatch();
         public static bool rightFootStep = true;
 
 
-        public override void OnApplicationStart()
+        public override void OnInitializeMelon()
         {
-            base.OnApplicationStart();
             tactsuitVr = new TactsuitVR();
             timerBackpack.Start();
             tactsuitVr.PlaybackHaptics("HeartBeat");
