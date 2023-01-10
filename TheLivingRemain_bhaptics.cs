@@ -11,7 +11,7 @@ using HarmonyLib;
 using MyBhapticsTactsuit;
 using Il2Cpp;
 
-[assembly: MelonInfo(typeof(TheLivingRemain_bhaptics.TheLivingRemain_bhaptics), "TheLivingRemain_bhaptics", "1.5.0", "Florian Fahrenberger")]
+[assembly: MelonInfo(typeof(TheLivingRemain_bhaptics.TheLivingRemain_bhaptics), "TheLivingRemain_bhaptics", "2.0.0", "Florian Fahrenberger")]
 [assembly: MelonGame("Five Finger Studios", "TheLivingRemain")]
 
 
