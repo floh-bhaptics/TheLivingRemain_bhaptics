@@ -26,16 +26,20 @@
       <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Il2Cppmscorlib">
       <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MelonLoader">
-      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\MelonLoader.dll</HintPath>
+    <Reference Include="Il2CppOculus.VR">
+      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\Il2CppAssemblies\Il2CppOculus.VR.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Oculus.VR">
-      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\Il2CppAssemblies\Oculus.VR.dll</HintPath>
+    <Reference Include="MelonLoader">
+      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\MelonLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">

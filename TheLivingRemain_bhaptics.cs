@@ -9,6 +9,7 @@ using System.Diagnostics;
 using MelonLoader;
 using HarmonyLib;
 using MyBhapticsTactsuit;
+using Il2Cpp;
 
 [assembly: MelonInfo(typeof(TheLivingRemain_bhaptics.TheLivingRemain_bhaptics), "TheLivingRemain_bhaptics", "1.5.0", "Florian Fahrenberger")]
 [assembly: MelonGame("Five Finger Studios", "TheLivingRemain")]
@@ -79,7 +80,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix(Handgun __instance)
             {
                 if (__instance.canFire) return;
-                bool isRight = (__instance.holdingHand == VRTK.GrabAttachMechanics.Hand.right);
+                bool isRight = (__instance.holdingHand == Il2CppVRTK.GrabAttachMechanics.Hand.right);
                 tactsuitVr.Recoil("Pistol", isRight);
             }
         }
@@ -102,7 +103,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix(MachineGunBack __instance)
             {
                 if (__instance.canFire) return;
-                bool isRight = (__instance.holdingHand == VRTK.GrabAttachMechanics.Hand.right);
+                bool isRight = (__instance.holdingHand == Il2CppVRTK.GrabAttachMechanics.Hand.right);
                 tactsuitVr.Recoil("Shotgun", isRight);
             }
         }
@@ -115,7 +116,7 @@ namespace TheLivingRemain_bhaptics
             {
                 if (__instance.controllerReference == null) return;
                 if (!__instance.grabbed) return;
-                bool isRight = (__instance.controllerReference.hand == VRTK.SDK_BaseController.ControllerHand.Right);
+                bool isRight = (__instance.controllerReference.hand == Il2CppVRTK.SDK_BaseController.ControllerHand.Right);
                 tactsuitVr.Recoil("Shotgun", isRight, true);
             }
         }
@@ -137,7 +138,7 @@ namespace TheLivingRemain_bhaptics
             public static void Postfix(Melee __instance)
             {
                 tactsuitVr.LOG("DelayHaptics");
-                bool isRight = (__instance.hand == VRTK.GrabAttachMechanics.Hand.right);
+                bool isRight = (__instance.hand == Il2CppVRTK.GrabAttachMechanics.Hand.right);
                 tactsuitVr.Recoil("Knife", isRight);
             }
         }
@@ -301,7 +302,7 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(AmmoBeltMagazines), "AttachToHand", new Type[] { typeof(UnityEngine.GameObject), typeof(VRTK.VRTK_InteractGrab), typeof(VRTK.VRTK_InteractTouch) })]
+        [HarmonyPatch(typeof(AmmoBeltMagazines), "AttachToHand", new Type[] { typeof(UnityEngine.GameObject), typeof(Il2CppVRTK.VRTK_InteractGrab), typeof(Il2CppVRTK.VRTK_InteractTouch) })]
         public class bhaptics_GetStuffFromBackPack
         {
             [HarmonyPostfix]
