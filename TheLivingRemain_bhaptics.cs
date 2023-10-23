@@ -14,7 +14,7 @@ using System.Runtime;
 using UnityEngine;
 using Il2CppHurricaneVR.Framework.Core;
 
-[assembly: MelonInfo(typeof(TheLivingRemain_bhaptics.TheLivingRemain_bhaptics), "TheLivingRemain_bhaptics", "2.0.0", "Florian Fahrenberger")]
+[assembly: MelonInfo(typeof(TheLivingRemain_bhaptics.TheLivingRemain_bhaptics), "TheLivingRemain_bhaptics", "3.0.0", "Florian Fahrenberger")]
 [assembly: MelonGame("Five Finger Studios", "TheLivingRemain")]
 
 
@@ -44,7 +44,6 @@ namespace TheLivingRemain_bhaptics
             [HarmonyPostfix]
             public static void Postfix(PlayerController __instance)
             {
-                //tactsuitVr.LOG("ApplyDamageFloat");
                 if (__instance.hurtStatus == HurtStatus.hurt) tactsuitVr.StartHeartBeat();
                 else tactsuitVr.StopHeartBeat();
             }
@@ -56,7 +55,8 @@ namespace TheLivingRemain_bhaptics
             [HarmonyPostfix]
             public static void Postfix(PlayerController __instance)
             {
-                if (!tactsuitVr.IsPlaying("OutOfBreath")) tactsuitVr.PlaybackHaptics("OutOfBreath");
+                //if (!tactsuitVr.IsPlaying("OutOfBreath"))
+                    tactsuitVr.PlaybackHaptics("OutOfBreath");
             }
         }
 
@@ -66,7 +66,8 @@ namespace TheLivingRemain_bhaptics
             [HarmonyPostfix]
             public static void Postfix(PlayerController __instance)
             {
-                if (!tactsuitVr.IsPlaying("GasDeath")) tactsuitVr.PlaybackHaptics("GasDeath");
+                //if (!tactsuitVr.IsPlaying("GasDeath")) 
+                    tactsuitVr.PlaybackHaptics("GasDeath");
             }
         }
 
@@ -79,7 +80,8 @@ namespace TheLivingRemain_bhaptics
             {
                 if (__instance.used) return;
                 if (!__instance.CanGiveHeath()) return;
-                if (!tactsuitVr.IsPlaying("Healing")) tactsuitVr.PlaybackHaptics("Healing");
+                if (!tactsuitVr.IsPlaying("Healing"))
+                    tactsuitVr.PlaybackHaptics("Healing");
             }
         }
 
@@ -309,7 +311,7 @@ namespace TheLivingRemain_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(PlayerController), "showBloodFromHit", new Type[] {  })]
+        [HarmonyPatch(typeof(PlayerController), "playHurtAudioClip", new Type[] {  })]
         public class bhaptics_ShowBlood
         {
             [HarmonyPostfix]

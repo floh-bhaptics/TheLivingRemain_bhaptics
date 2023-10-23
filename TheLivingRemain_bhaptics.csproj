@@ -26,8 +26,8 @@
       <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="bHapticsLib">
-      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\bHapticsLib.dll</HintPath>
+    <Reference Include="Bhaptics.Tact">
+      <HintPath>Bhaptics.Tact.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2CppHurricaneVR.Framework">
@@ -61,7 +61,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY &quot;$(ProjectDir)bHaptics\&quot; &quot;$(TargetDir)bHaptics\&quot; /S /Y" />
+    <Exec Command="XCOPY &quot;$(SolutionDir)Bhaptics.Tact.dll&quot; &quot;$(TargetDir)\&quot; /S /Y&#xD;&#xA;XCOPY &quot;$(SolutionDir)bhaptics_library.dll&quot; &quot;$(TargetDir)\..\&quot; /S /Y" />
   </Target>
   
 </Project>

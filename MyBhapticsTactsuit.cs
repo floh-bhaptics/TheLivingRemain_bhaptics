@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using MelonLoader;
+using Bhaptics.SDK2;
 
 namespace MyBhapticsTactsuit
 {
@@ -23,15 +24,13 @@ namespace MyBhapticsTactsuit
         // dictionary of all feedback patterns found in the bHaptics directory
         public Dictionary<String, FileInfo> FeedbackMap = new Dictionary<String, FileInfo>();
 
-        private static bHapticsLib.RotationOption defaultRotationOption = new bHapticsLib.RotationOption(0.0f, 0.0f);
-
         public void HeartBeatFunc()
         {
             while (true)
             {
                 // Check if reset event is active
                 HeartBeat_mrse.WaitOne();
-                bHapticsLib.bHapticsManager.PlayRegistered("HeartBeat");
+                PlaybackHaptics("HeartBeat");
                 Thread.Sleep(600);
             }
         }
@@ -39,11 +38,16 @@ namespace MyBhapticsTactsuit
         public TactsuitVR()
         {
             LOG("Initializing suit");
-            suitDisabled = false;
-            RegisterAllTactFiles();
+            var res = BhapticsSDK2.Initialize("aJ3w5rjMyXIuXT1ZjXH1", "5LT1oXLunpY8CXsyDJe6", "");
+
+            if (res > 0)
+            {
+                LOG("Failed to do bhaptics initialization...");
+            }
             LOG("Starting HeartBeat thread...");
             Thread HeartBeatThread = new Thread(HeartBeatFunc);
             HeartBeatThread.Start();
+            PlaybackHaptics("HeartBeat");
         }
 
         public void LOG(string logStr)
@@ -55,59 +59,14 @@ namespace MyBhapticsTactsuit
 
 
 
-        void RegisterAllTactFiles()
+        public void PlaybackHaptics(String key, float intensity = 1.0f, float duration = 1.0f, float xzAngle = 0f, float yShift = 0f)
         {
-            // Get location of the compiled assembly and search through "bHaptics" directory and contained patterns
-            string configPath = Directory.GetCurrentDirectory() + "\\Mods\\bHaptics";
-            DirectoryInfo d = new DirectoryInfo(configPath);
-            FileInfo[] Files = d.GetFiles("*.tact", SearchOption.AllDirectories);
-            for (int i = 0; i < Files.Length; i++)
-            {
-                string filename = Files[i].Name;
-                string fullName = Files[i].FullName;
-                string prefix = Path.GetFileNameWithoutExtension(filename);
-                // LOG("Trying to register: " + prefix + " " + fullName);
-                if (filename == "." || filename == "..")
-                    continue;
-                string tactFileStr = File.ReadAllText(fullName);
-                try
-                {
-                    bHapticsLib.bHapticsManager.RegisterPatternFromJson(prefix, tactFileStr);
-                    LOG("Pattern registered: " + prefix);
-                }
-                catch (Exception e) { LOG(e.ToString()); }
-
-                FeedbackMap.Add(prefix, Files[i]);
-            }
-            systemInitialized = true;
+            int res;
+            res = BhapticsSDK2.Play(key.ToLower(), intensity, duration, xzAngle, yShift);
+            // LOG("Playing back: " + key);
+            //if (res > 0) LOG("Playback failed: " + key + " " + key.ToLower());
         }
 
-        public void PlaybackHaptics(String key, float intensity = 1.0f, float duration = 1.0f)
-        {
-            //LOG("Trying to play");
-            if (FeedbackMap.ContainsKey(key))
-            {
-                //LOG("ScaleOption");
-                bHapticsLib.ScaleOption scaleOption = new bHapticsLib.ScaleOption(intensity, duration);
-                //LOG("Submit");
-                bHapticsLib.bHapticsManager.PlayRegistered(key, key, scaleOption, defaultRotationOption);
-                // LOG("Playing back: " + key);
-            }
-            else
-            {
-                LOG("Feedback not registered: " + key);
-            }
-        }
-
-        public void PlayBackHit(String key, float xzAngle, float yShift)
-        {
-            // two parameters can be given to the pattern to move it on the vest:
-            // 1. An angle in degrees [0, 360] to turn the pattern to the left
-            // 2. A shift [-0.5, 0.5] in y-direction (up and down) to move it up or down
-            bHapticsLib.ScaleOption scaleOption = new bHapticsLib.ScaleOption(1f, 1f);
-            bHapticsLib.RotationOption rotationOption = new bHapticsLib.RotationOption(xzAngle, yShift);
-            bHapticsLib.bHapticsManager.PlayRegistered(key, key, scaleOption, rotationOption);
-        }
 
         public void Recoil(string weaponName, bool isRightHand, bool twoHanded = false, float intensity = 1.0f)
         {
@@ -115,10 +74,6 @@ namespace MyBhapticsTactsuit
             // isRightHand is just which side the feedback is on
             // intensity should usually be between 0 and 1
 
-            float duration = 1.0f;
-            var scaleOption = new bHapticsLib.ScaleOption(intensity, duration);
-            // the function needs some rotation if you want to give the scale option as well
-            var rotationFront = new bHapticsLib.RotationOption(0f, 0f);
             // make postfix according to parameter
             string postfix = "_L";
             string otherPostfix = "_R";
@@ -133,30 +88,16 @@ namespace MyBhapticsTactsuit
             // between swords, pistols, shotguns, ... by just changing the shoulder feedback
             // and scaling via the intensity for arms and hands
             string keyVest = "Recoil" + weaponName + "Vest" + postfix;
-            bHapticsLib.bHapticsManager.PlayRegistered(keyHands, keyHands, scaleOption, rotationFront);
-            bHapticsLib.bHapticsManager.PlayRegistered(keyArm, keyArm, scaleOption, rotationFront);
-            bHapticsLib.bHapticsManager.PlayRegistered(keyVest, keyVest, scaleOption, rotationFront);
+            PlaybackHaptics(keyHands);
+            PlaybackHaptics(keyArm);
+            PlaybackHaptics(keyVest);
             if (twoHanded)
             {
-                bHapticsLib.bHapticsManager.PlayRegistered(keyOtherHand, keyOtherHand, scaleOption, rotationFront);
-                bHapticsLib.bHapticsManager.PlayRegistered(keyOtherArm, keyOtherArm, scaleOption, rotationFront);
+                PlaybackHaptics(keyOtherHand);
+                PlaybackHaptics(keyOtherArm);
             }
         }
 
-
-        public void HeadShot(String key, float hitAngle)
-        {
-            // I made 4 patterns in the Tactal for fron/back/left/right headshots
-            if (bHapticsLib.bHapticsManager.IsDeviceConnected(bHapticsLib.PositionID.Head))
-            {
-                if ((hitAngle < 45f) | (hitAngle > 315f)) { PlaybackHaptics("Headshot_F"); }
-                if ((hitAngle > 45f) && (hitAngle < 135f)) { PlaybackHaptics("Headshot_L"); }
-                if ((hitAngle > 135f) && (hitAngle < 225f)) { PlaybackHaptics("Headshot_B"); }
-                if ((hitAngle > 225f) && (hitAngle < 315f)) { PlaybackHaptics("Headshot_R"); }
-            }
-            // If there is no Tactal, just forward to the vest  with angle and at the very top (0.5)
-            else { PlayBackHit(key, hitAngle, 0.5f); }
-        }
 
         public void StartHeartBeat()
         {
@@ -170,21 +111,18 @@ namespace MyBhapticsTactsuit
 
         public bool IsPlaying(String effect)
         {
-            return bHapticsLib.bHapticsManager.IsPlaying(effect);
+            return BhapticsSDK2.IsPlaying(effect.ToLower());
         }
 
         public void StopHapticFeedback(String effect)
         {
-            bHapticsLib.bHapticsManager.StopPlaying(effect);
+            BhapticsSDK2.Stop(effect.ToLower());
         }
 
         public void StopAllHapticFeedback()
         {
             StopThreads();
-            foreach (String key in FeedbackMap.Keys)
-            {
-                bHapticsLib.bHapticsManager.StopPlaying(key);
-            }
+            BhapticsSDK2.StopAll();
         }
 
         public void StopThreads()
