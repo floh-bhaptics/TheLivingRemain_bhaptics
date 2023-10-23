@@ -30,6 +30,10 @@
       <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\bHapticsLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Il2CppHurricaneVR.Framework">
+      <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\Il2CppAssemblies\Il2CppHurricaneVR.Framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Il2CppInterop.Runtime">
       <HintPath>F:\SteamLibrary\steamapps\common\TheLivingRemain\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
       <Private>False</Private>

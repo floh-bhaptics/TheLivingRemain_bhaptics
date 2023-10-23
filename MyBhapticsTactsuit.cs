@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using MelonLoader;
@@ -108,33 +109,37 @@ namespace MyBhapticsTactsuit
             bHapticsLib.bHapticsManager.PlayRegistered(key, key, scaleOption, rotationOption);
         }
 
-        public void Recoil(string weaponName, bool isRightHand, bool secondaryHand = false, float intensity = 1.0f)
+        public void Recoil(string weaponName, bool isRightHand, bool twoHanded = false, float intensity = 1.0f)
         {
             // weaponName is a parameter that will go into the vest feedback pattern name
             // isRightHand is just which side the feedback is on
             // intensity should usually be between 0 and 1
 
             float duration = 1.0f;
-            if (secondaryHand) intensity *= 0.8f;
             var scaleOption = new bHapticsLib.ScaleOption(intensity, duration);
             // the function needs some rotation if you want to give the scale option as well
             var rotationFront = new bHapticsLib.RotationOption(0f, 0f);
             // make postfix according to parameter
             string postfix = "_L";
-            if (isRightHand) { postfix = "_R";}
+            string otherPostfix = "_R";
+            if (isRightHand) { postfix = "_R"; otherPostfix = "_L"; }
 
             // stitch together pattern names for Arm and Hand recoil
             string keyHands = "RecoilHands" + postfix;
             string keyArm = "RecoilArms" + postfix;
+            string keyOtherHand = "RecoilHands" + otherPostfix;
+            string keyOtherArm = "RecoilArms" + otherPostfix;
             // vest pattern name contains the weapon name. This way, you can quickly switch
             // between swords, pistols, shotguns, ... by just changing the shoulder feedback
             // and scaling via the intensity for arms and hands
             string keyVest = "Recoil" + weaponName + "Vest" + postfix;
             bHapticsLib.bHapticsManager.PlayRegistered(keyHands, keyHands, scaleOption, rotationFront);
             bHapticsLib.bHapticsManager.PlayRegistered(keyArm, keyArm, scaleOption, rotationFront);
-            if (!secondaryHand)
+            bHapticsLib.bHapticsManager.PlayRegistered(keyVest, keyVest, scaleOption, rotationFront);
+            if (twoHanded)
             {
-                bHapticsLib.bHapticsManager.PlayRegistered(keyVest, keyVest, scaleOption, rotationFront);
+                bHapticsLib.bHapticsManager.PlayRegistered(keyOtherHand, keyOtherHand, scaleOption, rotationFront);
+                bHapticsLib.bHapticsManager.PlayRegistered(keyOtherArm, keyOtherArm, scaleOption, rotationFront);
             }
         }
 
